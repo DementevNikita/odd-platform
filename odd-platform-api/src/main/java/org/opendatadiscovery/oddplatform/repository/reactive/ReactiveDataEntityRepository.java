@@ -3,6 +3,7 @@ package org.opendatadiscovery.oddplatform.repository.reactive;
 import java.util.List;
 import org.opendatadiscovery.oddplatform.dto.DataEntityDimensionsDto;
 import org.opendatadiscovery.oddplatform.model.tables.pojos.DataEntityPojo;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface ReactiveDataEntityRepository extends ReactiveCRUDRepository<DataEntityPojo> {
@@ -15,6 +16,8 @@ public interface ReactiveDataEntityRepository extends ReactiveCRUDRepository<Dat
     Mono<DataEntityDimensionsDto> getDataEntityWithNamespace(final long dataEntityId);
 
     Mono<List<DataEntityPojo>> getDEGEntities(final String groupOddrn);
+
+    Flux<String> getDEGEntitiesOddrns(final String groupOddrn);
 
     Mono<DataEntityPojo> setInternalName(final long dataEntityId, final String name);
 

@@ -14,7 +14,10 @@ public enum AlertTypeEnum {
     DISTRIBUTION_ANOMALY("Distribution anomaly"),
     BACKWARDS_INCOMPATIBLE_SCHEMA("Backwards incompatible schema"),
     FAILED_DQ_TEST("Failed data quality test run"),
-    FAILED_JOB("Failed job run");
+    FAILED_JOB("Failed job run"),
+
+    DATA_SOURCE_CONNECTION_ERROR("Data source connection error"),
+    GENERIC_ERROR("Data source generic error");
 
     @Getter
     private final String description;

@@ -16,6 +16,7 @@ import org.opendatadiscovery.oddplatform.auth.AuthIdentityProvider;
 import org.opendatadiscovery.oddplatform.dto.alert.AlertStatusEnum;
 import org.opendatadiscovery.oddplatform.dto.alert.AlertTypeEnum;
 import org.opendatadiscovery.oddplatform.dto.alert.ExternalAlert;
+import org.opendatadiscovery.oddplatform.ingestion.contract.model.IngestionAlertList;
 import org.opendatadiscovery.oddplatform.mapper.AlertMapper;
 import org.opendatadiscovery.oddplatform.model.tables.pojos.AlertPojo;
 import org.opendatadiscovery.oddplatform.model.tables.pojos.OwnerPojo;
@@ -119,6 +120,29 @@ public class AlertServiceImpl implements AlertService {
         return alertRepository.getExistingMessengers(alerts)
             .flatMap(em -> createAlerts(alerts, em))
             .switchIfEmpty(createAlerts(alerts, Set.of()));
+    }
+
+    @Override
+    public Mono<Void> createAlerts(final IngestionAlertList alertList) {
+        final List<AlertPojo> alerts = alertList
+            .getItems().stream()
+            .map(a -> {
+                final LocalDateTime now = LocalDateTime.now();
+
+                final AlertTypeEnum alertType = AlertTypeEnum.getByName(a.getType().name()).orElseThrow(
+                    () -> new IllegalArgumentException("Unknown alert type: %s".formatted(a.getType().name())));
+
+                return new AlertPojo()
+                    .setCreatedAt(now)
+                    .setStatusUpdatedAt(now)
+                    .setType(alertType.name())
+                    .setDataEntityOddrn(a.getRelatedDataEntityOddrn())
+                    .setDescription(a.getDescription())
+                    .setStatus(AlertStatusEnum.OPEN.name());
+            })
+            .toList();
+
+        return alertRepository.createAlerts(null).then();
     }
 
     private Mono<List<AlertPojo>> createAlerts(final List<AlertPojo> alerts, final Set<String> em) {

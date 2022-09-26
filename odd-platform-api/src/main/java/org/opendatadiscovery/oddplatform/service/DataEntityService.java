@@ -20,6 +20,7 @@ import org.opendatadiscovery.oddplatform.api.contract.model.MetadataObject;
 import org.opendatadiscovery.oddplatform.api.contract.model.Tag;
 import org.opendatadiscovery.oddplatform.api.contract.model.TagsFormData;
 import org.opendatadiscovery.oddplatform.dto.lineage.LineageStreamKind;
+import org.opendatadiscovery.oddplatform.ingestion.contract.model.OddrnList;
 import org.opendatadiscovery.oddplatform.model.tables.pojos.DataEntityPojo;
 import org.opendatadiscovery.oddplatform.model.tables.pojos.GroupEntityRelationsPojo;
 import reactor.core.publisher.Flux;
@@ -73,4 +74,6 @@ public interface DataEntityService extends ReadOnlyCRUDService<DataEntity, DataE
     Flux<GroupEntityRelationsPojo> deleteDataEntityFromDEG(final Long dataEntityId, final Long dataEntityGroupId);
 
     Mono<DataEntityUsageInfo> getDataEntityUsageInfo();
+
+    Mono<OddrnList> getDEGEntitiesOddrns(final String degOddrn);
 }

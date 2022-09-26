@@ -1,11 +1,11 @@
 package org.opendatadiscovery.oddplatform.service;
 
-import java.util.Collection;
 import java.util.List;
 import org.opendatadiscovery.oddplatform.api.contract.model.AlertList;
 import org.opendatadiscovery.oddplatform.api.contract.model.AlertStatus;
 import org.opendatadiscovery.oddplatform.api.contract.model.AlertTotals;
 import org.opendatadiscovery.oddplatform.dto.alert.ExternalAlert;
+import org.opendatadiscovery.oddplatform.ingestion.contract.model.IngestionAlertList;
 import org.opendatadiscovery.oddplatform.model.tables.pojos.AlertPojo;
 import reactor.core.publisher.Mono;
 
@@ -25,4 +25,6 @@ public interface AlertService {
     Mono<AlertList> listDependentObjectsAlerts(int page, int size);
 
     Mono<List<AlertPojo>> createAlerts(final List<AlertPojo> alerts);
+
+    Mono<Void> createAlerts(final IngestionAlertList alerts);
 }

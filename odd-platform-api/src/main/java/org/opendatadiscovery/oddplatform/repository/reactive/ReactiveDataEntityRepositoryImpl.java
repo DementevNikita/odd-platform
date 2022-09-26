@@ -15,6 +15,7 @@ import org.opendatadiscovery.oddplatform.model.tables.records.DataEntityRecord;
 import org.opendatadiscovery.oddplatform.repository.util.JooqQueryHelper;
 import org.opendatadiscovery.oddplatform.repository.util.JooqReactiveOperations;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static org.opendatadiscovery.oddplatform.model.Tables.DATA_ENTITY;
@@ -84,6 +85,15 @@ public class ReactiveDataEntityRepositoryImpl
         return jooqReactiveOperations.flux(query)
             .map(r -> r.into(DataEntityPojo.class))
             .collectList();
+    }
+
+    @Override
+    public Flux<String> getDEGEntitiesOddrns(final String groupOddrn) {
+        final SelectConditionStep<Record1<String>> query = DSL.select(GROUP_ENTITY_RELATIONS.DATA_ENTITY_ODDRN)
+            .from(GROUP_ENTITY_RELATIONS)
+            .where(GROUP_ENTITY_RELATIONS.GROUP_ODDRN.eq(groupOddrn));
+
+        return jooqReactiveOperations.flux(query).map(Record1::component1);
     }
 
     @Override

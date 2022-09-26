@@ -39,6 +39,7 @@ import org.opendatadiscovery.oddplatform.dto.lineage.LineageStreamKind;
 import org.opendatadiscovery.oddplatform.dto.metadata.MetadataDto;
 import org.opendatadiscovery.oddplatform.dto.metadata.MetadataKey;
 import org.opendatadiscovery.oddplatform.exception.NotFoundException;
+import org.opendatadiscovery.oddplatform.ingestion.contract.model.OddrnList;
 import org.opendatadiscovery.oddplatform.mapper.DataEntityMapper;
 import org.opendatadiscovery.oddplatform.mapper.MetadataFieldMapper;
 import org.opendatadiscovery.oddplatform.mapper.MetadataFieldValueMapper;
@@ -472,6 +473,13 @@ public class DataEntityServiceImpl
         return Mono.zip(dataEntityStatisticsRepository.getStatistics(),
                 dataEntityFilledService.getFilledDataEntitiesCount())
             .map(function(entityMapper::mapUsageInfo));
+    }
+
+    @Override
+    public Mono<OddrnList> getDEGEntitiesOddrns(final String degOddrn) {
+        return reactiveDataEntityRepository.getDEGEntitiesOddrns(degOddrn)
+            .collectList()
+            .map(oddrnList -> new OddrnList().items(oddrnList));
     }
 
     private Mono<DataEntityRef> createDEG(final DataEntityGroupFormData formData,
