@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import waitUntil, {
   Options,
   Predicate,
@@ -15,14 +14,15 @@ export default class CommonUtils {
   /**
    *
    */
-  static unique_identifier() {
+  static uniqueIdentifier() {
     return uuidv4().substring(0, 6);
   }
 
   /**
    *
+   * @param filepath
    */
-  static extract_filename_from_path(filepath: string) {
+  static extractFilenameFromPath(filepath: string) {
     const { name, ext } = path.parse(filepath);
 
     return `${name}${ext}`;
@@ -30,8 +30,12 @@ export default class CommonUtils {
 
   /**
    *
+   * @param root0
+   * @param root0.dimensions
+   * @param root0.content
+   * @param root0.templates
    */
-  static generate_dimensional_array_with_data({
+  static generateDimensionalArrayWithData({
     dimensions,
   }: {
     dimensions: number;
@@ -44,15 +48,20 @@ export default class CommonUtils {
       arr[i] = new Array(dimensions).fill(faker.random.word());
     }
 
-    arr.push([`id: ${CommonUtils.unique_identifier()}`]);
+    arr.push([`id: ${CommonUtils.uniqueIdentifier()}`]);
 
     return arr;
   }
 
   /**
    *
+   * @param cb
+   * @param root0
+   * @param root0.timeout
+   * @param root0.intervalBetweenAttempts
+   * @param root0.timeoutMessage
    */
-  static async wait_until<T extends Record<keyof T, unknown> | PredicateReturnValue>(
+  static async waitUntil<T extends Record<keyof T, unknown> | PredicateReturnValue>(
     cb: Predicate<T>,
     {
       timeout = configuration.timeout,

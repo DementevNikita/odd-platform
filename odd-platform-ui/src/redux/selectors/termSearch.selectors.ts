@@ -2,6 +2,7 @@ import { createSelector } from '@reduxjs/toolkit';
 import { createStatusesSelector } from 'redux/selectors/loader-selectors';
 import * as actions from 'redux/actions';
 import {
+  CurrentPageInfo,
   RootState,
   SearchFacetStateById,
   SearchFilterStateSynced,
@@ -16,27 +17,27 @@ import compact from 'lodash/compact';
 import { emptyArr } from 'lib/constants';
 
 export const getTermSearchCreateStatuses = createStatusesSelector(
-  actions.createTermsSearchActionType
+  actions.createTermsSearchActType
 );
 
 export const getTermSearchFetchStatuses = createStatusesSelector(
-  actions.getTermsSearchActionType
+  actions.getTermsSearchActType
 );
 
 export const getTermSearchUpdateStatuses = createStatusesSelector(
-  actions.updateTermsSearchActionType
+  actions.updateTermsSearchActType
 );
 
 export const getTermSearchResultsFetchStatuses = createStatusesSelector(
-  actions.fetchTermsSearchResultsActionType
+  actions.fetchTermsSearchResultsActType
 );
 
-export const getTermSearchSuggestionsFetchStatuses =
-  createStatusesSelector(actions.fetchTermsSearchSuggestionsActionType);
+export const getTermSearchSuggestionsFetchStatuses = createStatusesSelector(
+  actions.fetchTermsSearchSuggestionsActType
+);
 
 // Term Search
-const termSearchState = ({ termSearch }: RootState): TermSearchState =>
-  termSearch;
+const termSearchState = ({ termSearch }: RootState): TermSearchState => termSearch;
 
 export const getTermSearchId = createSelector(
   termSearchState,
@@ -50,7 +51,7 @@ export const getTermSearchFacetsSynced = createSelector(
 
 export const getTermSearchResultsPage = createSelector(
   termSearchState,
-  termsSearch => termsSearch.results.pageInfo
+  (termsSearch): CurrentPageInfo => termsSearch.results.pageInfo
 );
 
 export const getTermSearchResults = createSelector(
@@ -89,17 +90,13 @@ export const getTermSearchQuery = createSelector(
 );
 
 // Facets
-export const getTermSearchFacetsParams = createSelector(
-  termSearchState,
-  termsSearch =>
-    mapValues(termsSearch.facetState, facetState =>
-      pickBy(facetState, facetOption => !facetOption.syncedState)
-    )
+export const getTermSearchFacetsParams = createSelector(termSearchState, termsSearch =>
+  mapValues(termsSearch.facetState, facetState =>
+    pickBy(facetState, facetOption => !facetOption.syncedState)
+  )
 );
 
-export const getTermSearchFacetsByType = (
-  facetName: TermSearchOptionalFacetNames
-) =>
+export const getTermSearchFacetsByType = (facetName: TermSearchOptionalFacetNames) =>
   createSelector(
     termSearchState,
     termsSearch => values(termsSearch.facets[facetName]?.items) || []

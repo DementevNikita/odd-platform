@@ -17,8 +17,10 @@ import org.opendatadiscovery.oddplatform.model.tables.pojos.DataEntityPojo;
 import org.opendatadiscovery.oddplatform.model.tables.pojos.LineagePojo;
 import org.opendatadiscovery.oddplatform.model.tables.pojos.OwnerPojo;
 import org.opendatadiscovery.oddplatform.model.tables.pojos.OwnershipPojo;
+import org.opendatadiscovery.oddplatform.repository.reactive.ReactiveAlertRepository;
 import org.opendatadiscovery.oddplatform.repository.reactive.ReactiveOwnerRepository;
 import org.opendatadiscovery.oddplatform.repository.reactive.ReactiveOwnershipRepository;
+import org.opendatadiscovery.oddplatform.service.LineageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import reactor.core.publisher.Mono;
@@ -29,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AlertRepositoryImplTest extends BaseIntegrationTest {
 
     @Autowired
-    private AlertRepository alertRepository;
+    private ReactiveAlertRepository alertRepository;
 
     @Autowired
     private DataEntityRepository dataEntityRepository;
@@ -42,6 +44,9 @@ class AlertRepositoryImplTest extends BaseIntegrationTest {
 
     @Autowired
     private LineageRepository lineageRepository;
+
+    @Autowired
+    private LineageService lineageService;
 
     @Test
     @DisplayName("Test creates alerts, expecting alerts in the database")
@@ -176,16 +181,18 @@ class AlertRepositoryImplTest extends BaseIntegrationTest {
         final List<AlertPojo> resolvedAlerts = alertRepository.createAlerts(resolvedPojos).block();
         final List<AlertPojo> openAlerts = alertRepository.createAlerts(openPojos).block();
 
-        alertRepository.getAlertsByDataEntityId(dataEntityPojo.getId()).as(StepVerifier::create).assertNext(a -> {
-            assertThat(a)
-                .hasSize(7)
-                .extracting(AlertDto::getAlert)
-                .containsAll(openAlerts)
-                .containsAll(resolvedAlerts);
-            assertThat(a)
-                .extracting(AlertDto::getDataEntity)
-                .containsOnly(dataEntityPojo);
-        })
+        alertRepository.getAlertsByDataEntityId(dataEntityPojo.getId())
+            .as(StepVerifier::create)
+            .assertNext(a -> {
+                assertThat(a)
+                    .hasSize(7)
+                    .extracting(AlertDto::getAlert)
+                    .containsAll(openAlerts)
+                    .containsAll(resolvedAlerts);
+                assertThat(a)
+                    .extracting(AlertDto::getDataEntity)
+                    .containsOnly(dataEntityPojo);
+            })
             .verifyComplete();
     }
 
@@ -210,7 +217,7 @@ class AlertRepositoryImplTest extends BaseIntegrationTest {
             createLineagePojo(dataEntityPojos.get(1).getOddrn(), dataEntityPojos.get(2).getOddrn());
         final LineagePojo thirdLineagePojo =
             createLineagePojo(dataEntityPojos.get(2).getOddrn(), dataEntityPojos.get(3).getOddrn());
-        lineageRepository.replaceLineagePaths(List.of(firstLineagePojo, secondLineagePojo, thirdLineagePojo));
+        lineageService.replaceLineagePaths(List.of(firstLineagePojo, secondLineagePojo, thirdLineagePojo)).blockLast();
         final List<AlertPojo> alerts = alertRepository.createAlerts(List.of(
             createAlertPojo(dataEntityPojos.get(0).getOddrn()), createAlertPojo(dataEntityPojos.get(1).getOddrn()),
             createAlertPojo(dataEntityPojos.get(2).getOddrn()), createAlertPojo(dataEntityPojos.get(3).getOddrn())
@@ -253,7 +260,7 @@ class AlertRepositoryImplTest extends BaseIntegrationTest {
         ownershipRepository.create(createOwnershipPojo(ownerPojo.getId(), dataEntityPojos.get(5).getId())).block();
         ownershipRepository.create(createOwnershipPojo(ownerPojo.getId(), dataEntityPojos.get(6).getId())).block();
 
-        lineageRepository.replaceLineagePaths(List.of(
+        lineageService.replaceLineagePaths(List.of(
             createLineagePojo(dataEntityPojos.get(0).getOddrn(), dataEntityPojos.get(2).getOddrn()),
             createLineagePojo(dataEntityPojos.get(2).getOddrn(), dataEntityPojos.get(3).getOddrn()),
             createLineagePojo(dataEntityPojos.get(3).getOddrn(), dataEntityPojos.get(5).getOddrn()),
@@ -261,7 +268,7 @@ class AlertRepositoryImplTest extends BaseIntegrationTest {
             createLineagePojo(dataEntityPojos.get(1).getOddrn(), dataEntityPojos.get(4).getOddrn()),
             createLineagePojo(dataEntityPojos.get(4).getOddrn(), dataEntityPojos.get(5).getOddrn()),
             createLineagePojo(dataEntityPojos.get(4).getOddrn(), dataEntityPojos.get(6).getOddrn())
-        ));
+        )).blockLast();
 
         final Collection<AlertPojo> alerts = alertRepository.createAlerts(List.of(
             createAlertPojo(dataEntityPojos.get(0).getOddrn()), createAlertPojo(dataEntityPojos.get(1).getOddrn()),
@@ -362,7 +369,7 @@ class AlertRepositoryImplTest extends BaseIntegrationTest {
             createLineagePojo(dataEntityPojos.get(1).getOddrn(), dataEntityPojos.get(2).getOddrn());
         final LineagePojo thirdLineagePojo =
             createLineagePojo(dataEntityPojos.get(2).getOddrn(), dataEntityPojos.get(3).getOddrn());
-        lineageRepository.replaceLineagePaths(List.of(firstLineagePojo, secondLineagePojo, thirdLineagePojo));
+        lineageService.replaceLineagePaths(List.of(firstLineagePojo, secondLineagePojo, thirdLineagePojo)).blockLast();
         alertRepository.createAlerts(List.of(
             createAlertPojo(dataEntityPojos.get(0).getOddrn()), createAlertPojo(dataEntityPojos.get(1).getOddrn()),
             createAlertPojo(dataEntityPojos.get(2).getOddrn()), createAlertPojo(dataEntityPojos.get(3).getOddrn())

@@ -1,25 +1,17 @@
 import React from 'react';
 import { Box, Grid, SelectChangeEvent, Typography } from '@mui/material';
+import { AppButton, AppMenuItem, AppSelect, LabeledInfoItem } from 'components/shared';
 import { format, formatDistanceStrict } from 'date-fns';
-import {
-  DataQualityTestExpectation,
-  DataQualityTestSeverity,
-} from 'generated-sources';
+import { DataQualityTestExpectation, DataQualityTestSeverity } from 'generated-sources';
 import {
   getDatasetTestListFetchingStatuses,
   getQualityTestByTestId,
 } from 'redux/selectors';
-import { useAppDispatch, useAppSelector } from 'lib/redux/hooks';
 import { setDataQATestSeverity } from 'redux/thunks';
-import { useAppParams } from 'lib/hooks';
+import { useAppParams, usePermissions } from 'lib/hooks';
 import { ORDERED_SEVERITY } from 'lib/constants';
 import { hasDataQualityTestExpectations } from 'lib/helpers';
-import {
-  AppButton,
-  AppSelect,
-  AppMenuItem,
-  LabeledInfoItem,
-} from 'components/shared';
+import { useAppDispatch, useAppSelector } from 'redux/lib/hooks';
 import TestReportDetailsOverviewSkeleton from './TestReportDetailsOverviewSkeleton/TestReportDetailsOverviewSkeleton';
 import TestReportDetailsOverviewExpectationsModal from './TestReportDetailsOverviewParametersModal/TestReportDetailsOverviewParametersModal';
 import * as S from './TestReportDetailsOverviewStyles';
@@ -27,6 +19,7 @@ import * as S from './TestReportDetailsOverviewStyles';
 const TestReportDetailsOverview: React.FC = () => {
   const dispatch = useAppDispatch();
   const { dataEntityId, dataQATestId } = useAppParams();
+  const { isAllowedTo: editDataEntity } = usePermissions({ dataEntityId });
 
   const qualityTest = useAppSelector(getQualityTestByTestId(dataQATestId));
 
@@ -45,11 +38,7 @@ const TestReportDetailsOverview: React.FC = () => {
       })
     );
 
-  const stringifyParams = JSON.stringify(
-    qualityTest?.expectation,
-    null,
-    2
-  );
+  const stringifyParams = JSON.stringify(qualityTest?.expectation, null, 2);
   const [showSeeMore, setShowSeeMore] = React.useState(false);
   const paramsRef = React.useRef<HTMLParagraphElement>(null);
 
@@ -61,20 +50,17 @@ const TestReportDetailsOverview: React.FC = () => {
   }, [isDatasetTestListFetching, paramsRef.current]);
 
   return (
-    <Grid container direction="column" wrap="nowrap">
+    <Grid container direction='column' wrap='nowrap'>
       {isDatasetTestListFetching ? (
         <TestReportDetailsOverviewSkeleton length={1} />
       ) : (
         <>
           <Grid item sx={{ mt: 2 }} xs={12}>
-            <LabeledInfoItem label="Date" inline labelWidth={2.4}>
+            <LabeledInfoItem label='Date' inline labelWidth={2.4}>
               {qualityTest?.latestRun?.startTime &&
-                format(
-                  qualityTest?.latestRun?.startTime,
-                  'd MMM yyyy, HH:MM a'
-                )}
+                format(qualityTest?.latestRun?.startTime, 'd MMM yyyy, HH:MM a')}
             </LabeledInfoItem>
-            <LabeledInfoItem label="Duration" inline labelWidth={2.4}>
+            <LabeledInfoItem label='Duration' inline labelWidth={2.4}>
               {qualityTest?.latestRun?.startTime &&
                 qualityTest?.latestRun.endTime &&
                 formatDistanceStrict(
@@ -84,16 +70,15 @@ const TestReportDetailsOverview: React.FC = () => {
                 )}
             </LabeledInfoItem>
             <LabeledInfoItem
-              label="Severity"
+              label='Severity'
               inline
               labelWidth={2.4}
-              valueComponent="div"
+              valueComponent='div'
             >
               <AppSelect
-                size="small"
-                defaultValue={
-                  qualityTest?.severity || DataQualityTestSeverity.MAJOR
-                }
+                size='small'
+                disabled={!editDataEntity}
+                defaultValue={qualityTest?.severity || DataQualityTestSeverity.MAJOR}
                 onChange={handleSeverityChange}
               >
                 {ORDERED_SEVERITY.map(severity => (
@@ -106,26 +91,20 @@ const TestReportDetailsOverview: React.FC = () => {
           </Grid>
 
           {hasDataQualityTestExpectations(qualityTest?.expectation) && (
-            <Grid container sx={{ mt: 2 }}>
-              <Typography variant="h4">Parameters</Typography>
-              <S.Params
-                $isExpandable={showSeeMore}
-                ref={paramsRef}
-                variant="body1"
-              >
+            <Grid container sx={{ mt: 2 }} flexDirection='column'>
+              <Typography variant='h4'>Parameters</Typography>
+              <S.Params $isExpandable={showSeeMore} ref={paramsRef} variant='body1'>
                 {stringifyParams}
               </S.Params>
               {showSeeMore && (
                 <Box sx={{ px: 1.5, py: 0.25 }}>
                   <TestReportDetailsOverviewExpectationsModal
                     openBtnEl={
-                      <AppButton size="medium" color="tertiary">
+                      <AppButton size='medium' color='tertiary'>
                         See more
                       </AppButton>
                     }
-                    expectations={
-                      qualityTest?.expectation as DataQualityTestExpectation
-                    }
+                    expectations={qualityTest?.expectation as DataQualityTestExpectation}
                   />
                 </Box>
               )}
@@ -134,7 +113,7 @@ const TestReportDetailsOverview: React.FC = () => {
 
           {!!qualityTest?.linkedUrlList?.length && (
             <Grid item sx={{ mt: 2.25 }} xs={12}>
-              <Typography variant="h4">Links</Typography>
+              <Typography variant='h4'>Links</Typography>
               <Grid container sx={{ mt: 1 }}>
                 {qualityTest.linkedUrlList.map(link => (
                   <AppButton
@@ -143,9 +122,9 @@ const TestReportDetailsOverview: React.FC = () => {
                     sx={{
                       py: 0.25,
                     }}
-                    size="medium"
-                    color="tertiary"
-                    linkTarget="_blank"
+                    size='medium'
+                    color='tertiary'
+                    linkTarget='_blank'
                     truncate
                   >
                     {link}

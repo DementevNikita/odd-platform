@@ -1,12 +1,12 @@
-import { odd } from '../../config/environments.json';
 import { configuration } from '../../config/configuration';
+import { odd } from '../../config/environments.json';
 import Button from '../elements/button';
 import TextBox from '../elements/text-box';
 
 import { Pages } from './index';
 
 const SELECTORS = {
-  toast_massage: 'div[class*="toastText"]',
+  toastMessage: 'div[class*="toastText"]',
 };
 
 export default class BasePage {
@@ -14,6 +14,7 @@ export default class BasePage {
 
   /**
    *
+   * @param locator
    */
   protected locator(locator: string) {
     return this.page.locator(locator);
@@ -23,8 +24,8 @@ export default class BasePage {
     return this.page.url();
   }
 
-  get toast_message() {
-    return new TextBox(this.page, SELECTORS.toast_massage);
+  get toastMessage() {
+    return new TextBox(this.page, SELECTORS.toastMessage);
   }
 
   get body() {
@@ -33,9 +34,9 @@ export default class BasePage {
 
   /**
    *
+   * @param url
    */
-  build_url(url: string) {
-    // @ts-ignore
+  buildUrl(url: string) {
     return odd[configuration.environment].replace('/login', url);
   }
 }

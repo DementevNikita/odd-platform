@@ -1,7 +1,7 @@
 import React, { HTMLAttributeAnchorTarget } from 'react';
 import { Box, ButtonProps } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { ButtonColors, StyledAppButton } from './AppButtonStyles';
+import { ButtonColors, Loader, StyledAppButton } from './AppButtonStyles';
 
 interface AppButtonProps
   extends Pick<
@@ -25,10 +25,11 @@ interface AppButtonProps
   to?: string | object;
   truncate?: boolean;
   linkTarget?: HTMLAttributeAnchorTarget;
+  isLoading?: boolean;
 }
 
 const AppButton: React.FC<AppButtonProps> = React.forwardRef(
-  ({ color, children, truncate, to, linkTarget, ...props }, ref) => {
+  ({ color, children, truncate, to, linkTarget, isLoading, ...props }, ref) => {
     const [isOverflowed, setIsOverflowed] = React.useState(truncate);
     const buttonRef = React.useRef<HTMLButtonElement>(null);
 
@@ -42,7 +43,7 @@ const AppButton: React.FC<AppButtonProps> = React.forwardRef(
 
     if (to) {
       return (
-        <Box sx={props.sx} width="100%">
+        <Box sx={props.sx} width='100%'>
           <Link to={to} style={{ width: 'inherit' }} target={linkTarget}>
             <StyledAppButton
               {...props}
@@ -52,7 +53,7 @@ const AppButton: React.FC<AppButtonProps> = React.forwardRef(
               disableRipple
               $isOverflowed={isOverflowed}
             >
-              {children}
+              {isLoading ? <Loader /> : children}
             </StyledAppButton>
           </Link>
         </Box>
@@ -68,7 +69,7 @@ const AppButton: React.FC<AppButtonProps> = React.forwardRef(
         disableRipple
         $isOverflowed={isOverflowed}
       >
-        {children}
+        {isLoading ? <Loader /> : children}
       </StyledAppButton>
     );
   }

@@ -10,13 +10,13 @@ import {
   NamespaceAutocomplete,
 } from 'components/shared';
 import { ClearIcon } from 'components/shared/Icons';
-import { useAppDispatch, useAppSelector } from 'lib/redux/hooks';
+import { useAppDispatch, useAppSelector } from 'redux/lib/hooks';
 import { createTerm, updateTerm } from 'redux/thunks';
 import {
   getTermCreatingStatuses,
   getTermUpdatingStatuses,
 } from 'redux/selectors';
-import { useAppPaths } from 'lib/hooks/useAppPaths';
+import { useAppPaths } from 'lib/hooks';
 
 interface TermsFormDialogProps {
   btnCreateEl: JSX.Element;

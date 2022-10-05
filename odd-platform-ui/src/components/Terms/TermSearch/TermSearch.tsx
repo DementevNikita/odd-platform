@@ -6,9 +6,7 @@ import { useHistory } from 'react-router-dom';
 import { AppButton, PageWithLeftSidebar } from 'components/shared';
 import { AddIcon } from 'components/shared/Icons';
 import { Grid } from '@mui/material';
-import { useAppPaths } from 'lib/hooks/useAppPaths';
-import { useAppParams } from 'lib/hooks';
-import { useAppDispatch, useAppSelector } from 'lib/redux/hooks';
+import { useAppParams, useAppPaths } from 'lib/hooks';
 import {
   getTermSearchCreateStatuses,
   getTermSearchFacetsParams,
@@ -16,13 +14,10 @@ import {
   getTermSearchId,
   getTermSearchQuery,
 } from 'redux/selectors';
-import {
-  createTermSearch,
-  getTermsSearch,
-  updateTermSearch,
-} from 'redux/thunks';
+import { createTermSearch, getTermsSearch, updateTermSearch } from 'redux/thunks';
+import { useAppDispatch, useAppSelector } from 'redux/lib/hooks';
+import TermSearchInput from './TermSearchInput/TermSearchInput';
 import TermSearchFilters from './TermSearchFilters/TermSearchFilters';
-import TermMainSearch from './TermMainSearch/TermMainSearch';
 import TermsSearchResults from './TermSearchResults/TermSearchResults';
 import TermsForm from './TermForm/TermsForm';
 
@@ -36,18 +31,12 @@ const TermSearch: React.FC = () => {
   const termSearchQuery = useAppSelector(getTermSearchQuery);
   const termSearchFacetParams = useAppSelector(getTermSearchFacetsParams);
   const termSearchFacetsSynced = useAppSelector(getTermSearchFacetsSynced);
-  const { isLoading: isTermSearchCreating } = useAppSelector(
-    getTermSearchCreateStatuses
-  );
+  const { isLoading: isTermSearchCreating } = useAppSelector(getTermSearchCreateStatuses);
 
   React.useEffect(() => {
     if (!routerTermSearchId && !isTermSearchCreating && !termSearchId) {
-      const emptySearchQuery = {
-        query: '',
-        pageSize: 30,
-        filters: {},
-      };
-      dispatch(createTermSearch({ termSearchFormData: emptySearchQuery }))
+      const termSearchFormData = { query: '', pageSize: 30, filters: {} };
+      dispatch(createTermSearch({ termSearchFormData }))
         .unwrap()
         .then(termSearch => {
           const termSearchLink = termSearchPath(termSearch.searchId);
@@ -57,23 +46,19 @@ const TermSearch: React.FC = () => {
   }, [routerTermSearchId, createTermSearch, isTermSearchCreating]);
 
   React.useEffect(() => {
-    if (!termSearchId && routerTermSearchId) {
+    if (!termSearchId && routerTermSearchId)
       dispatch(getTermsSearch({ searchId: routerTermSearchId }));
-    }
   }, [termSearchId, routerTermSearchId]);
 
   const updateSearchFacets = React.useCallback(
     useDebouncedCallback(
       () => {
-        dispatch(
-          updateTermSearch({
-            searchId: termSearchId,
-            termSearchFormData: {
-              query: termSearchQuery,
-              filters: mapValues(termSearchFacetParams, values),
-            },
-          })
-        );
+        const termSearchFormData = {
+          query: termSearchQuery,
+          filters: mapValues(termSearchFacetParams, values),
+        };
+
+        dispatch(updateTermSearch({ searchId: termSearchId, termSearchFormData }));
       },
       1500,
       { leading: true }
@@ -82,9 +67,7 @@ const TermSearch: React.FC = () => {
   );
 
   React.useEffect(() => {
-    if (!termSearchFacetsSynced) {
-      updateSearchFacets();
-    }
+    if (!termSearchFacetsSynced) updateSearchFacets();
   }, [termSearchFacetParams]);
 
   return (
@@ -94,19 +77,11 @@ const TermSearch: React.FC = () => {
           <TermSearchFilters />
         </PageWithLeftSidebar.LeftSidebarContainer>
         <PageWithLeftSidebar.ListContainer item xs={9}>
-          <Grid
-            container
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <TermMainSearch />
+          <Grid container justifyContent='space-between' alignItems='center' mt={1.5}>
+            <TermSearchInput />
             <TermsForm
               btnCreateEl={
-                <AppButton
-                  size="large"
-                  color="primary"
-                  startIcon={<AddIcon />}
-                >
+                <AppButton size='large' color='primary' startIcon={<AddIcon />}>
                   Add term
                 </AppButton>
               }
