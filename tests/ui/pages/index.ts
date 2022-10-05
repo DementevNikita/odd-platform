@@ -6,6 +6,7 @@ import TopPanel from './shared/top-panel';
 import ManagementPage from './management/management-page';
 import OwnersPage from './management/owners-page';
 import TagsPage from "./management/tags-page";
+import CatalogPage from "./catalog/catalog_page";
 // inject-import-page dont delete comment
 
 export class Pages {
@@ -16,6 +17,7 @@ export class Pages {
 
   readonly modals: Modals;
   readonly management: ManagementPage;
+  readonly catalog: CatalogPage;
   readonly owners: OwnersPage;
   readonly tags: TagsPage;
 
@@ -24,6 +26,7 @@ export class Pages {
     this.login = new LoginPage(this);
     this.modals = new Modals(this);
     this.management = new ManagementPage(this);
+    this.catalog = new CatalogPage(this);
     this.owners = new OwnersPage(this);
     this.tags = new TagsPage(this);
     // inject-init-page dont delete comment
