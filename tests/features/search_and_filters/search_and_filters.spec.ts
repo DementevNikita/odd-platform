@@ -30,7 +30,7 @@ test.describe('Check filters and search', () => {
           await test.step('I click owner filter', async () => {
               await pages.catalog.fillSearchString('BookETL');
               await pages.catalog.openDataEntity('BookETL');
-              await pages.dataEntity.createOwner(
+                        await pages.dataEntity.createOwner(
                   'firstOwner',
                   `No result. Create new owner "firstOwner"`,
                   'admin',
