@@ -25,25 +25,31 @@ test.describe('Search by name of data-entity', () => {
     /**
      * /project/1/test-cases/20
      */
-    test(`Display an empty list with invalid expression`, async ({ steps: { pages } }) => {
-      await test.step(`When fill an invalid expression in search input`, async () => {
+    test.describe('When entering an invalid expression', () => {
+      test.beforeEach(async ({ steps: { pages } }) => {
         await pages.catalog.searchBy('entityNameWithAlphabeticChars');
+      });
+      test(`Should display an empty list`, async ({ steps: { pages } }) => {
         expect(await pages.catalog.resultsList.isListNotEmpty()).toBeFalsy();
-
+      });
+      test(`Should display alert "No matches found"`, async ({ steps: { pages } }) => {
         expect(await pages.catalog.isAlertVisible()).toBeTruthy();
       });
     });
+
     /**
      * /project/1/test-cases/21
      */
-    test(`Display expected item with an expression which starts with special characters`, async ({
-      steps: { pages },
-    }) => {
-      await test.step(`When fill an expression which starts with special characters in the input`, async () => {
-        await pages.catalog.searchBy(entityNameWithSpecialChars);
-        expect(await pages.catalog.isListItemVisible(entityNameWithSpecialChars)).toBeTruthy();
+    test.describe('When entering name which starts with special chars', () => {
+      test(`Should display expected item`, async ({ steps: { pages } }) => {
+        await test.step(`Fill an expression which starts with special characters`, async () => {
+          await pages.catalog.searchBy(entityNameWithSpecialChars);
+
+          expect(await pages.catalog.isListItemVisible(entityNameWithSpecialChars)).toBeTruthy();
+        });
       });
     });
+
     /**
      * /project/1/test-cases/35
      */
