@@ -4,55 +4,51 @@ import List from '../../elements/list';
 import TextBox from '../../elements/text-box';
 import BasePage from '../base-page';
 
-const SELECTORS = {
-  filterWithSelect: filterName => `#select-label-id:has-text('${filterName}') >> ..`,
-  filterWithInput: filterName => `label:text-is("${filterName}") >> ..`,
-  searchBar: `[placeholder="Search"]`,
-  cleanSearchBarButton: `[placeholder="Search"] >> .. >> [title="Clear"]`,
-  filterList: `[role="listbox"]`,
-  filterOption: `[role="option"]`,
-  filterWithInputOption: `[role="presentation"]`,
-  listItemName: name => `a:has-text('${name}')`,
-  tab: name => `[role="tab"]:has-text('${name}')`,
-  searchButton: `[placeholder="Search"] >> ..`,
-  noMatchesFound: `text=No matches found`,
-  resultList: `#results-list`,
-  listItem: `a[class][href]`,
-};
+const filterWithSelect = (filterName: string) => `#select-label-id:has-text('${filterName}') >> ..`;
+const filterWithInput = (filterName: string) => `label:text-is("${filterName}") >> ..`;
+const searchBar = `[placeholder="Search"]`;
+const cleanSearchBarButton = `[placeholder="Search"] >> .. >> [title="Clear"]`;
+const filterList = `[role="listbox"]`;
+const filterOption = `[role="option"]`;
+const filterWithInputOption = `[role="presentation"]`;
+const listItemName = (name: string) => `a:has-text('${name}')`;
+const tab = (name: string) => `[role="tab"]:has-text('${name}')`;
+const searchButton = `[placeholder="Search"] >> ..`;
+const noMatchesFound = `text=No matches found`;
+const resultList = `#results-list`;
+const listItem = `a[class][href]`;
 export default class CatalogPage extends BasePage {
   get searchBar() {
-    return new InputField(this.page, SELECTORS.searchBar);
+    return new InputField(this.page, searchBar);
   }
 
   get alertNoMatchesFound() {
-    return new TextBox(this.page, SELECTORS.noMatchesFound);
+    return new TextBox(this.page, noMatchesFound);
   }
 
   get resultsList() {
-    return new List(this.page, SELECTORS.resultList, SELECTORS.listItem);
+    return new List(this.page, resultList, listItem);
   }
 
   get cleanSearchBar() {
-    return new Button(this.page, SELECTORS.cleanSearchBarButton);
+    return new Button(this.page, cleanSearchBarButton);
   }
 
   async openFilterWithSelect(filterName: string) {
-    await this.page.locator(SELECTORS.filterWithSelect(filterName)).click();
+    await this.page.locator(filterWithSelect(filterName)).click();
   }
 
   async chooseOption(option: string) {
-    await this.page.click(
-      `${SELECTORS.filterList} >> ${SELECTORS.filterOption}:has-text('${option}')`,
-    );
+    await this.page.click(`${filterList} >> ${filterOption}:has-text('${option}')`);
   }
 
   async searchByTextInFilter(filter: string, text: string) {
-    await this.page.locator(`${SELECTORS.filterWithInput(filter)} >> input`).fill(text);
-    await this.page.locator(`${SELECTORS.filterWithInputOption}:has-text('${text}')`).click();
+    await this.page.locator(`${filterWithInput(filter)} >> input`).fill(text);
+    await this.page.locator(`${filterWithInputOption}:has-text('${text}')`).click();
   }
 
   async openFilterWithInput(filterName: string) {
-    await this.page.locator(SELECTORS.filterWithInput(filterName)).click();
+    await this.page.locator(filterWithInput(filterName)).click();
   }
 
   async isListItemVisible(name: string): Promise<boolean> {
@@ -60,16 +56,16 @@ export default class CatalogPage extends BasePage {
   }
 
   async clickOnListItem(name: string) {
-    await this.page.locator(SELECTORS.listItemName(name)).click();
+    await this.page.locator(listItemName(name)).click();
   }
 
   async clickTab(name: string) {
-    return this.page.locator(SELECTORS.tab(name)).click();
+    return this.page.locator(tab(name)).click();
   }
 
   async searchBy(text: string) {
     await this.searchBar.fill(text);
-    await this.page.locator(SELECTORS.searchBar).press('Enter');
+    await this.page.locator(searchBar).press('Enter');
     await this.page.waitForLoadState('networkidle');
   }
 
